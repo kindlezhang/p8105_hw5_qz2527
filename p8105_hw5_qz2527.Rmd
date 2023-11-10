@@ -7,5 +7,17 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Problem 1
+
+
+first we import the data and describe it concisely.
+
+```{r}
+homi_data = read_csv("./data_file/homicide-data.csv")
+
+summary(homi_data)
 ```
 
