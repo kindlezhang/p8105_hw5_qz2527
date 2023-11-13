@@ -359,7 +359,9 @@ display: none;
 
 <div id="problem-1" class="section level2">
 <h2>Problem 1</h2>
-<p>first we import the data and describe it concisely.</p>
+<ul>
+<li>first we import the data and describe it concisely.</li>
+</ul>
 <pre class="r"><code>homi_data = read_csv(&quot;./data_file/homicide-data.csv&quot;)</code></pre>
 <pre><code>## Rows: 52179 Columns: 12
 ## ── Column specification ────────────────────────────────────────────────────────
@@ -369,6 +371,17 @@ display: none;
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>head(homi_data, 5)</code></pre>
+<pre><code>## # A tibble: 5 × 12
+##   uid   reported_date victim_last victim_first victim_race victim_age victim_sex
+##   &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;     
+## 1 Alb-…      20100504 GARCIA      JUAN         Hispanic    78         Male      
+## 2 Alb-…      20100216 MONTOYA     CAMERON      Hispanic    17         Male      
+## 3 Alb-…      20100601 SATTERFIELD VIVIANA      White       15         Female    
+## 4 Alb-…      20100101 MENDIOLA    CARLOS       Hispanic    32         Male      
+## 5 Alb-…      20100102 MULA        VIVIAN       White       72         Female    
+## # ℹ 5 more variables: city &lt;chr&gt;, state &lt;chr&gt;, lat &lt;dbl&gt;, lon &lt;dbl&gt;,
+## #   disposition &lt;chr&gt;</code></pre>
 <pre class="r"><code>summary(homi_data)</code></pre>
 <pre><code>##      uid            reported_date       victim_last        victim_first      
 ##  Length:52179       Min.   : 20070101   Length:52179       Length:52179      
@@ -394,6 +407,43 @@ display: none;
 ##                     3rd Qu.:40.03   3rd Qu.: -81.76                     
 ##                     Max.   :45.05   Max.   : -71.01                     
 ##                     NA&#39;s   :60      NA&#39;s   :60</code></pre>
+<ul>
+<li>tidy the data and make a series of operation upon it</li>
+</ul>
+<pre class="r"><code>homi_data =
+  homi_data |&gt;
+  janitor::clean_names() |&gt;
+  mutate(city_state = str_c(city, &quot;, &quot;, state))
+
+homi_data |&gt;
+  group_by(city) |&gt;
+  mutate(
+    unsolved_homi = case_match(
+      disposition,
+      &quot;Closed without arrest&quot; ~ 1,
+      &quot;Open/No arrest&quot; ~ 1,
+      .default = 0
+    )
+  ) |&gt;
+  summarise(total_homi = n(),
+            unsolved_homi = sum(unsolved_homi))</code></pre>
+<pre><code>## # A tibble: 50 × 3
+##    city        total_homi unsolved_homi
+##    &lt;chr&gt;            &lt;int&gt;         &lt;dbl&gt;
+##  1 Albuquerque        378           146
+##  2 Atlanta            973           373
+##  3 Baltimore         2827          1825
+##  4 Baton Rouge        424           196
+##  5 Birmingham         800           347
+##  6 Boston             614           310
+##  7 Buffalo            521           319
+##  8 Charlotte          687           206
+##  9 Chicago           5535          4073
+## 10 Cincinnati         694           309
+## # ℹ 40 more rows</code></pre>
+<p><font color="red">according to the result gained above , we can
+summarize the total homicides and unsolved homicides by each
+city.</font></p>
 </div>
 
 

@@ -13,11 +13,35 @@ library(tidyverse)
 ## Problem 1
 
 
-first we import the data and describe it concisely.
+* first we import the data and describe it concisely.
 
 ```{r}
 homi_data = read_csv("./data_file/homicide-data.csv")
 
+head(homi_data, 5)
 summary(homi_data)
 ```
+* tidy the data and make a series of operation upon it
+
+```{r}
+homi_data =
+  homi_data |>
+  janitor::clean_names() |>
+  mutate(city_state = str_c(city, ", ", state))
+
+homi_data |>
+  group_by(city) |>
+  mutate(
+    unsolved_homi = case_match(
+      disposition,
+      "Closed without arrest" ~ 1,
+      "Open/No arrest" ~ 1,
+      .default = 0
+    )
+  ) |>
+  summarise(total_homi = n(),
+            unsolved_homi = sum(unsolved_homi))
+```
+
+<font color = red>according to the result gained above , we can summarize the total homicides and unsolved homicides by each city.</font>
 
