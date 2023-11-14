@@ -106,3 +106,26 @@ plot =
 plot
 ```
 
+## Problem 2
+
+* import the data by using the function `list.files`, and then tidy it.
+
+```{r, message=FALSE}
+path = "./data_file/problem_2"
+id = list.files(path)
+id_list = as.list(id)
+
+new_df =
+  tibble(id = id_list) |>
+  mutate(address = str_c(path , "/", id),
+         weekly_data = map(address, read_csv)) |>
+  separate(id, into = c("arm", "other"), sep = "_") |>
+  separate(other, into = c("id", "other"), sep = 2) |>
+  select(-other,-address) |>
+  unnest(weekly_data)
+
+head(new_df)
+```
+
+
+  
