@@ -122,10 +122,15 @@ new_df =
   separate(id, into = c("arm", "other"), sep = "_") |>
   separate(other, into = c("id", "other"), sep = 2) |>
   select(-other,-address) |>
-  unnest(weekly_data)
-
-head(new_df)
+  unnest(weekly_data) |> 
+  knitr::kable()
 ```
 
+* show the dataset
 
+```{r}
+new_df
+```
+
+## Problem 3 
   
