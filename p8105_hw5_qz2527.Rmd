@@ -72,8 +72,16 @@ result_Bal |>
 
 * loop the function for each city
 
-```{r}
-
+```{r, warning = FALSE}
+homi_by_city |>
+  mutate(prop_test_result =
+           map2(unsolved_homi,
+                total_homi,
+                ~ prop.test(x = .x, n = .y))) |>
+  mutate(estimate_result =
+           map(prop_test_result, broom::tidy)) |>
+  unnest(estimate_result) |>
+  select(city_state, estimate, conf.low, conf.high)
 
 ```
 
