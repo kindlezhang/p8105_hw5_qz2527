@@ -452,37 +452,29 @@ city.</font></p>
 <li>use <code>prop.test</code> function to estimate the proportion of
 homicides that are unsolved</li>
 </ul>
-<pre class="r"><code>unsolved_prop = function(dataset, cityname) {
-  if (!cityname %in% dataset$city_state) {
-    stop(&quot;the city doesn&#39;t exist&quot;)
-  }
-  
-  homi_by_city =
-    dataset |&gt;
-    filter(city_state == cityname)
-  
-  result =
-    prop.test(
-      x = homi_by_city$&quot;unsolved_homi&quot;,
-      n = homi_by_city$&quot;total_homi&quot;,
-      p = NULL,
-      alternative = &quot;two.sided&quot;
-    )
-  
-  result |&gt;
-    broom::tidy() |&gt;
-    select(estimate, conf.low, conf.high) |&gt;
-    rename(esti_prop = estimate)
-}</code></pre>
-<pre class="r"><code>city_list = 
+<pre class="r"><code>homi_Bal = 
   homi_by_city |&gt; 
-  pull(city_state)
+    filter(city_state == &quot;Baltimore, MD&quot;) 
 
-unsolved_prop(homi_by_city, &quot;Baltimore, MD&quot;)</code></pre>
+result_Bal = 
+  prop.test(
+    x = homi_Bal$&quot;unsolved_homi&quot;,
+    n = homi_Bal$&quot;total_homi&quot;,
+    p = NULL,
+    alternative = &quot;two.sided&quot;
+  )
+
+result_Bal |&gt; 
+  broom::tidy() |&gt; 
+  select(estimate, conf.low, conf.high) |&gt; 
+  rename(esti_prop = estimate)</code></pre>
 <pre><code>## # A tibble: 1 × 3
 ##   esti_prop conf.low conf.high
 ##       &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
 ## 1     0.646    0.628     0.663</code></pre>
+<ul>
+<li>loop the function for each city</li>
+</ul>
 </div>
 
 
