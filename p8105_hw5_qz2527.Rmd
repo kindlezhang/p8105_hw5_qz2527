@@ -90,6 +90,19 @@ head(prop_by_city)
 * create a plot
 
 ```{r}
+plot =
+  prop_by_city |>
+  mutate(city_state = fct_reorder(city_state, estimate)) |>
+  ggplot(aes(x = city_state, y = estimate)) + geom_point(color = "yellow",
+                                                         size = 3,
+                                                         alpha = .4) + geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
+                                                                                     width = .2,
+                                                                                     color = "blue") + coord_flip() +
+  theme_classic()+
+  labs(title = "Proportiton of Unsolved Homicides by City",
+       x = "City",
+       y = "Estimated Proportion of Unsolved Homicides")
 
+plot
 ```
 
