@@ -29,8 +29,10 @@ homi_data =
   janitor::clean_names() |>
   mutate(city_state = str_c(city, ", ", state))
 
-homi_data |>
-  group_by(city) |>
+homi_by_city =
+  homi_data |>
+  drop_na(disposition) |> 
+  group_by(city_state) |>
   mutate(
     unsolved_homi = case_match(
       disposition,
@@ -41,7 +43,44 @@ homi_data |>
   ) |>
   summarise(total_homi = n(),
             unsolved_homi = sum(unsolved_homi))
+
+homi_by_city
 ```
 
 <font color = red>according to the result gained above , we can summarize the total homicides and unsolved homicides by each city.</font>
+
+* use `prop.test` function to estimate the proportion of homicides that are unsolved
+
+```{r}
+unsolved_prop = function(dataset, cityname) {
+  if (!cityname %in% dataset$city_state) {
+    stop("the city doesn't exist")
+  }
+  
+  homi_by_city =
+    dataset |>
+    filter(city_state == cityname)
+  
+  result =
+    prop.test(
+      x = homi_by_city$"unsolved_homi",
+      n = homi_by_city$"total_homi",
+      p = NULL,
+      alternative = "two.sided"
+    )
+  
+  result |>
+    broom::tidy() |>
+    select(estimate, conf.low, conf.high) |>
+    rename(esti_prop = estimate)
+}
+```
+
+```{r}
+city_list = 
+  homi_by_city |> 
+  pull(city_state)
+
+unsolved_prop(homi_by_city, "Baltimore, MD")
+```
 
