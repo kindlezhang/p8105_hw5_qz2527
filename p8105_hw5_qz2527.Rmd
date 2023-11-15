@@ -8,6 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+
+set.seed(123)
 ```
 
 ## Problem 1
@@ -171,3 +173,18 @@ plot_2
 
 ## Problem 3 
   
+* set the fix parameter and get the dataset
+
+```{r}
+n = 30
+sigma = 5
+
+list_data = vector("list", length = 5000)
+
+for (i in 1:5000) {
+  list_data[[i]] = rnorm(n = n, mean = 0, sd = 5)
+  
+}
+```
+
+
