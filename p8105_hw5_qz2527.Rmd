@@ -173,7 +173,7 @@ plot_2
 
 ## Problem 3 
   
-* set the fix parameter and get the dataset
+* set the fix parameter
 
 ```{r}
 n = 30
@@ -182,9 +182,97 @@ sigma = 5
 list_data = vector("list", length = 5000)
 
 for (i in 1:5000) {
-  list_data[[i]] = rnorm(n = n, mean = 0, sd = 5)
+  list_data[[i]] = rnorm(n = n, mean = 0, sd = sigma)
   
 }
+```
+
+* get the dataset
+
+```{r}
+result_df =
+  expand_grid(sample_size = n,
+              iter = 1:5000) |>
+  mutate(
+    estimate_df = map(list_data, t.test),
+    estimate_df_2 = map(estimate_df, broom::tidy)
+  ) |>
+  unnest(estimate_df_2) |>
+  select(iter, estimate, p.value) |>
+  rename(group = iter)
+```
+
+* repeat the experiment by different mean (using a function)
+
+```{r}
+norm_df =
+  function(sample_size, sigma, mean) {
+    sample_size = n
+    sigma = sigma
+    
+    list_data = vector("list", length = 5000)
+    
+    for (i in 1:5000) {
+      list_data[[i]] = rnorm(n = sample_size, mean = mean, sd = sigma)
+      
+    }
+    
+    result_df =
+      expand_grid(sample_size = n,
+                  iter = 1:5000) |>
+      mutate(
+        estimate_df = map(list_data, t.test),
+        estimate_df_2 = map(estimate_df, broom::tidy)
+      ) |>
+      unnest(estimate_df_2) |>
+      mutate(mean = mean) |> 
+      select(mean, estimate, p.value)
+  }
+```
+
+* Loop the function 
+
+```{r}
+outcome_df =
+  tibble()
+
+for (i in 0:6) {
+  result = norm_df(30, 5, i)
+  
+  outcome_df = bind_rows(outcome_df, result)
+}
+
+outcome_df |>
+  mutate(reject = if_else(p.value <= 0.05, 1, 0)) |>
+  group_by(mean) |>
+  count(reject) |>
+  knitr::kable()
+```
+
+* make a plot showing the rejection propitiation and the mean
+
+```{r}
+outcome_df |>
+  mutate(reject = if_else(p.value <= 0.05, 1, 0)) |>
+  group_by(mean) |>
+  summarise(n_obs = n(),
+            reject_prop = sum(reject) / n()) |>
+  mutate(mean = str_c("mean=", mean),
+         mean = fct_inorder(mean)) |> 
+  ggplot(aes(x = mean, y = reject_prop, fill = mean)) + geom_bar(stat = "identity", width = 0.5) + 
+  labs(
+    title = "A bar plot shows rejection propoition",
+    x = "effect size",
+    y = "reject propoition",
+    color = "mean",
+    caption = "prop over different means"
+  )
+```
+
+<font color = red>we can find from the table and plot that, the larger effect is, the larger power will be. </font>
+
+```{r}
+
 ```
 
 
