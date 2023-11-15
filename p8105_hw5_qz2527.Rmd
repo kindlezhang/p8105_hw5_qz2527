@@ -21,6 +21,9 @@ homi_data = read_csv("./data_file/homicide-data.csv")
 head(homi_data, 5)
 summary(homi_data)
 ```
+
+<font color = red>This is a dataset with a `r homi_data |> nrow()`rows and a `r homi_data |> ncol()` variables. It includes the homicides events' details, like victim's name, report date, the location where the accident occures and so on.</font>
+
 * tidy the data and make a series of operation upon it
 
 ```{r}
