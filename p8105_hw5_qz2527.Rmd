@@ -125,15 +125,49 @@ new_df =
   separate(id, into = c("arm", "other"), sep = "_") |>
   separate(other, into = c("id", "other"), sep = 2) |>
   select(-other,-address) |>
-  unnest(weekly_data) |> 
-  knitr::kable()
+  unnest(weekly_data)
 ```
 
 * show the dataset
 
 ```{r}
-new_df
+new_df |>
+  knitr::kable()
 ```
+
+* make a spaghetti plot showing observations on each subject over time
+
+```{r}
+new_df = 
+  new_df |> 
+    mutate(arm_id = str_c(arm, "_", id)) |> 
+    select( -id) |> 
+    relocate(arm_id) |> 
+  pivot_longer(
+    week_1:week_8,
+    names_to = "time",
+    values_to = "data"
+  ) 
+
+plot_2 = 
+  new_df |> 
+  separate(time, into = c("week", "time"), sep = 5)|>
+  mutate(time = as.numeric(time)) |> 
+  ggplot(aes(x = time, y = data, color = arm_id)) + geom_line() + 
+  facet_grid(. ~ arm) + 
+  labs(
+    title = "A “spaghetti” plot",
+    x = "time(week)",
+    y = "data_value",
+    color = "State",
+    caption = "data_value over time"
+  )+
+  theme(legend.position = "bottom")
+  
+plot_2
+```
+
+<font color = red>We can find that the data in the control group swings in a range of -2.5 to 4 stably. The trend in the experiment group is climbing from the zero to the 7.5. </font>
 
 ## Problem 3 
   
