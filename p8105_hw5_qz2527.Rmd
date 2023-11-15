@@ -265,7 +265,7 @@ outcome_df |>
     x = "effect size",
     y = "reject propoition",
     color = "mean",
-    caption = "prop over different means"
+    caption = "power over different means"
   )
 ```
 
